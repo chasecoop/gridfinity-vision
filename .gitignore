@@ -226,3 +226,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+
+# gridfinity-vision app data
+/uploads/
+/output/
+/bins/
