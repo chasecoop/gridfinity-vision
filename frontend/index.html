@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gridfinity Vision</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Gridfinity Vision</h1>
+    <p>Photo → measured silhouette → printable Gridfinity bin STL</p>
+  </header>
+
+  <main>
+    <div class="steps">
+      <span data-step="upload">1. Photos</span> →
+      <span data-step="review">2. Review</span> →
+      <span data-step="params">3. Bin size</span> →
+      <span data-step="preview">4. Preview &amp; download</span>
+    </div>
+
+    <div id="error" class="error" style="display:none"></div>
+
+    <!-- Step 1: Upload -->
+    <section id="step-upload" class="panel">
+      <h2>Upload photos</h2>
+      <p class="hint">
+        Print <a href="/assets/calibration-marker.png" target="_blank">the calibration marker</a>
+        at exactly 40×40mm and include it flat in both shots: one straight down
+        from directly above the item, one straight-on from the side. Use a plain background.
+      </p>
+      <div class="row">
+        <div class="field">
+          <label for="top-photo">Top-down photo</label>
+          <input type="file" id="top-photo" accept="image/*" />
+        </div>
+        <div class="field">
+          <label for="side-photo">Side photo</label>
+          <input type="file" id="side-photo" accept="image/*" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="item-name">Item name (optional)</label>
+          <input type="text" id="item-name" placeholder="e.g. wera screwdriver set" />
+        </div>
+        <div class="field">
+          <label for="marker-size">Marker size (mm)</label>
+          <input type="number" id="marker-size" value="40" />
+        </div>
+      </div>
+      <button id="upload-btn">Analyze photos</button>
+    </section>
+
+    <!-- Step 2: Review -->
+    <section id="step-review" class="panel" style="display:none">
+      <h2>Review the detected outline</h2>
+      <div class="photo-pair">
+        <figure><img id="top-photo-preview" /><figcaption>Top-down photo</figcaption></figure>
+        <figure><img id="side-photo-preview" /><figcaption>Side photo</figcaption></figure>
+      </div>
+      <p class="hint">Drag a point to fix the outline. Double-click an edge to add a point; double-click a point to remove it.</p>
+      <canvas id="silhouette-canvas" width="500" height="400"></canvas>
+      <div class="field" style="max-width: 220px; margin-top: 1rem;">
+        <label for="height-input">Measured height (mm)</label>
+        <input type="number" id="height-input" step="0.1" />
+      </div>
+      <div class="actions">
+        <button id="review-continue-btn">Continue</button>
+      </div>
+    </section>
+
+    <!-- Step 3: Bin params -->
+    <section id="step-params" class="panel" style="display:none">
+      <h2>Bin size</h2>
+      <p class="hint">Auto-computed from the outline + clearance. Adjust if you want more room.</p>
+      <div class="row">
+        <div class="field">
+          <label for="grid-x">Width (42mm units)</label>
+          <input type="number" id="grid-x" min="1" />
+        </div>
+        <div class="field">
+          <label for="grid-y">Depth (42mm units)</label>
+          <input type="number" id="grid-y" min="1" />
+        </div>
+        <div class="field">
+          <label for="bin-height">Height (7mm units)</label>
+          <input type="number" id="bin-height" min="2" />
+        </div>
+        <div class="field">
+          <label for="clearance">Clearance (mm)</label>
+          <input type="number" id="clearance" step="0.5" min="0" />
+        </div>
+      </div>
+      <div class="actions">
+        <button id="generate-btn">Generate bin</button>
+      </div>
+    </section>
+
+    <!-- Step 4: Preview -->
+    <section id="step-preview" class="panel" style="display:none">
+      <h2>Preview</h2>
+      <div id="viewer-container"></div>
+      <div class="actions">
+        <a id="download-link" href="#"><button>Download STL</button></a>
+        <button id="start-over-btn" class="secondary">Start over</button>
+      </div>
+      <p class="hint">Open this STL in Bambu Studio to slice and print.</p>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
